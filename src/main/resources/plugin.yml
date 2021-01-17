@@ -1,0 +1,5 @@
+name: Com.github.dedenneee
+version: ${project.version}
+main: com.github.dedenneee.com.github.dedenneee.Com.github.dedenneee
+api-version: 1.15
+authors: [ Dedenneee ]
