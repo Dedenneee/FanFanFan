@@ -11,23 +11,15 @@ import org.bukkit.block.data.type.TrapDoor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.util.Vector;
-
-import static org.bukkit.Bukkit.getLogger;
 
 public class FanListener implements Listener {
 
-    final int IRON_DISTANCE = 7;
+    final int MAX_DISTANCE = 7;
+    final Vector X_AXIS_VECTOR = new Vector(0.2D, 0D,0D);
     final Vector Y_AXIS_VECTOR = new Vector(0D, 0.35D, 0D);
-
-    @EventHandler
-    public void onPJoin(PlayerJoinEvent e){
-
-        e.setJoinMessage("ようこそ"+e.getPlayer().getDisplayName()+"さん");
-    }
+    final Vector Z_AXIS_VECTOR = new Vector(0D, 0D,0.2D);
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent e){
@@ -38,6 +30,10 @@ public class FanListener implements Listener {
         }
 
         checkVerticalAxis(player);
+        checkHorizontalAxis(player,"X","positive");
+        checkHorizontalAxis(player,"X","negative");
+        checkHorizontalAxis(player,"Z","positive");
+        checkHorizontalAxis(player,"Z","negative");
 
     }
 
@@ -51,7 +47,7 @@ public class FanListener implements Listener {
 
         boolean isYTrapDoor = false;
         Block footBlock;
-        for (int i = 0; i < IRON_DISTANCE; i++){
+        for (int i = 0; i < MAX_DISTANCE; i++){
             footBlock = loc.getBlock();
             loc.setY(loc.getY() - 1);
             //トラップドア探し
@@ -62,6 +58,7 @@ public class FanListener implements Listener {
                 }
                 break;
             }
+
             //空気の場合はいったん無視
             if(footBlock.getType().equals(Material.AIR) || footBlock.getType().equals(Material.CAVE_AIR)
                     || footBlock.getType().equals(Material.VOID_AIR) ){
@@ -72,13 +69,11 @@ public class FanListener implements Listener {
                 break;
             }
         }
-
         if(isYTrapDoor == false){
             return;
         }
-
+        //トラップドアの下のブロック
         Block ub = loc.getBlock();
-
         if(!ub.getType().equals(Material.DISPENSER) ){
             return;
         }
@@ -97,18 +92,105 @@ public class FanListener implements Listener {
         player.setVelocity(toVec);
         player.setVelocity(player.getVelocity().add(Y_AXIS_VECTOR));
         player.setFallDistance(0F);
-        getLogger().info("飛ぶ");
     }
 
-    public boolean checkHorizontalAxis(Location playerLoc){
-        boolean isHorizontalFan = false;
+    public void checkHorizontalAxis(Player player, String axis,String direction){
+        boolean isHorizontalTrapDoor = false;
+        Location loc = player.getLocation();
+        Block HorizontalBlock = loc.getBlock();
+        for (int i = 0; i < MAX_DISTANCE; i++){
+            HorizontalBlock = loc.getBlock();
+            loc = getHorizontalLocale(loc,axis,direction);
 
-        return isHorizontalFan;
+            //トラップドア探し
+            if(HorizontalBlock.getType().equals(Material.IRON_TRAPDOOR)){
+                TrapDoor trapDoor = (TrapDoor) HorizontalBlock.getBlockData();
+                if(trapDoor.isOpen() == true){
+                    isHorizontalTrapDoor = true;
+                }
+                break;
+            }
+
+            //空気の場合はいったん無視
+            if(HorizontalBlock.getType().equals(Material.AIR) || HorizontalBlock.getType().equals(Material.CAVE_AIR)
+                    || HorizontalBlock.getType().equals(Material.VOID_AIR) ){
+                continue;
+            }
+            //間に空気以外のブロックがあるときは中断
+            if(!HorizontalBlock.getType().equals(Material.IRON_TRAPDOOR)){
+                break;
+            }
+        }
+        if(isHorizontalTrapDoor == false){
+            return;
+        }
+        //トラップドアの先のブロック
+        Block nb = loc.getBlock();
+        if(!nb.getType().equals(Material.DISPENSER) ){
+            return;
+        }
+        Dispenser dispenser = (Dispenser)nb.getBlockData();
+        TrapDoor trapDoor = (TrapDoor) HorizontalBlock.getBlockData();
+        if(dispenser.getFacing() != trapDoor.getFacing()){
+            return;
+        }
+        Vector curVec = player.getVelocity();
+        Vector toVec = calcHorizontalVelocity(player,curVec,axis,direction);
+        player.setVelocity(toVec);
+
     }
 
-    public boolean checkFanFace(Location trapLoc){
-        boolean isFacing = false;
+    public Location getHorizontalLocale(Location loc,String axis,String direction){
+        switch (axis){
+            case "X":
+                if (direction.equals("positive")){
+                    loc.setX(loc.getX() + 1);
+                }else if(direction.equals("negative")){
+                    loc.setX(loc.getX() - 1);
+                }
+                break;
+            case "Z":
+                if (direction.equals("positive")){
+                    loc.setZ(loc.getZ() + 1);
+                }else if(direction.equals("negative")){
+                    loc.setZ(loc.getZ() - 1);
+                }
+                break;
+            default:
+                break;
+        }
+        return loc;
+    }
 
-        return isFacing;
+    /**
+     * 水平の速度を求める
+     * @param curVec 現在のVelocity
+     * @param axis 軸 X or Z
+     * @param direction 方向 正 or 負
+     * @return 計算後の速度
+     */
+    public Vector calcHorizontalVelocity(Player player,Vector curVec, String axis, String direction){
+        if (player.isSneaking()){
+            return curVec;
+        }
+        switch (axis){
+            case "X":
+                if (direction.equals("positive")){
+                    curVec.add(new Vector(X_AXIS_VECTOR.getX() * -1,0D,0D));
+                }else if(direction.equals("negative")){
+                    curVec.add(X_AXIS_VECTOR);
+                }
+                break;
+            case "Z":
+                if (direction.equals("positive")){
+                    curVec.add(new Vector(0D,0D,Z_AXIS_VECTOR.getZ() * -1));
+                }else if(direction.equals("negative")){
+                    curVec.add(Z_AXIS_VECTOR);
+                }
+                break;
+            default:
+                break;
+        }
+        return curVec;
     }
 }
