@@ -1,5 +1,5 @@
-name: Com.github.dedenneee
+name: FanPlugin
 version: ${project.version}
-main: com.github.dedenneee.com.github.dedenneee.Com.github.dedenneee
+main: net.kunmc.lab.FanPlugin
 api-version: 1.15
 authors: [ Dedenneee ]
