@@ -3,3 +3,14 @@ version: ${project.version}
 main: net.kunmc.lab.FanPlugin
 api-version: 1.15
 authors: [ Dedenneee ]
+
+commands:
+  fan:
+    description: Activate the Fan Plugin
+    usage: /<command> <on,off>
+    permission: Fan.operator
+    permission-message: You don't have <permission>
+permissions:
+  Fan.operator:
+    description: Fan operator
+    default: op

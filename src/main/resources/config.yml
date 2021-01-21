@@ -1,0 +1,11 @@
+#各ブロックの風の有効範囲
+#limit = 最大距離
+power:
+  limit: 12
+  iron: 12
+  acacia: 8
+  oak: 7
+  jungle: 6
+  birch: 5
+  dark_oak: 4
+  spruce: 3
