@@ -1,2 +1,4 @@
 扇風機Plugin
-作成中
+
+/fan <on,off>で切り替え
+config.ymlでトラップドアごとの飛ばす距離調整
