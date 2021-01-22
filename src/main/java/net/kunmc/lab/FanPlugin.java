@@ -1,7 +1,11 @@
 package net.kunmc.lab;
 
+import org.bukkit.GameMode;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;
@@ -34,8 +38,7 @@ public final class FanPlugin extends JavaPlugin {
         };
         FanUtil.max_distance = config.getInt("power.limit");
         getLogger().info("扇風機プラグインがオンになりました");
-        getServer().getPluginManager().registerEvents(new FanListener(), this);
-
+        new FanAction().runTaskTimer(this,0L,1L);
     }
 
     @Override
@@ -43,5 +46,6 @@ public final class FanPlugin extends JavaPlugin {
         // Plugin shutdown logic
         getLogger().info("扇風機プラグインがオフになりました");
     }
+
 
 }

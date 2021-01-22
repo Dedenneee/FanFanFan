@@ -11,6 +11,6 @@ power:
   spruce: 3
 velocity:
   y: 0.3
-  x: 0.1
-  z: 0.1
+  x: 0.05
+  z: 0.05
   fall: 0.85

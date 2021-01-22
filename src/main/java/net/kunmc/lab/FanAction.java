@@ -10,55 +10,33 @@ import org.bukkit.block.data.type.Dispenser;
 import org.bukkit.block.data.type.TrapDoor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-public class FanListener implements Listener {
-
+public class FanAction extends BukkitRunnable {
     FanUtil util = new FanUtil();
 
-    /**
-     * 動いた時の処理
-     * @param e PlayerMoveEvent
-     */
-    @EventHandler
-    public void onPlayerMove(PlayerMoveEvent e){
-        Player player = e.getPlayer();
-        boolean isSneaking = player.isSneaking();
-        doAction(player,isSneaking);
-    }
+    @Override
+    public void run(){
+        Bukkit.getServer().getOnlinePlayers().forEach(player ->{
+            if(player.getGameMode() == GameMode.SPECTATOR || player.isFlying() ){
+                return;
+            }
+            boolean isSneaking = player.isSneaking();
+            checkVerticalAxis(player,isSneaking);
+            if(!isSneaking){
+                checkHorizontalAxis(player,"X","positive");
+                checkHorizontalAxis(player,"X","negative");
+                checkHorizontalAxis(player,"Z","positive");
+                checkHorizontalAxis(player,"Z","negative");
+            }
+        });
 
-    /**
-     * スニーク時の処理
-     * @param e PlayerToggleSneakEvent
-     */
-    @EventHandler
-    public void onToggleSneaking(PlayerToggleSneakEvent e){
-        Player player = e.getPlayer();
-        //直前のスニーク状態が取得されるので反転
-        boolean isSneaking = !player.isSneaking();
-        doAction(player,isSneaking);
-    }
-
-    /**
-     * 実際の処理への橋渡し
-     * @param player プレイヤー
-     * @param isSneaking スニークしているか
-     */
-    public void doAction(Player player,boolean isSneaking){
-        if(player.getGameMode() == GameMode.SPECTATOR || player.isFlying() ){
-            return;
-        }
-
-        checkVerticalAxis(player,isSneaking);
-        if(!isSneaking){
-            checkHorizontalAxis(player,"X","positive");
-            checkHorizontalAxis(player,"X","negative");
-            checkHorizontalAxis(player,"Z","positive");
-            checkHorizontalAxis(player,"Z","negative");
-        }
     }
 
     /**
@@ -82,10 +60,8 @@ public class FanListener implements Listener {
             }
 
             //空気の場合はいったん無視
-            if(footBlock.getType().equals(Material.AIR) || footBlock.getType().equals(Material.CAVE_AIR)
-                    || footBlock.getType().equals(Material.VOID_AIR)){
-                continue;
-            }else{
+            if(!(footBlock.getType().equals(Material.AIR) || footBlock.getType().equals(Material.CAVE_AIR)
+                    || footBlock.getType().equals(Material.VOID_AIR))){
                 break;
             }
         }
@@ -125,26 +101,31 @@ public class FanListener implements Listener {
 
         Location loc = player.getLocation();
         Block HorizontalBlock = loc.getBlock();
-        for (int distance = 0; distance <= FanUtil.max_distance + 1; distance++) {
-            HorizontalBlock = loc.getBlock();
-            loc = util.getHorizontalLocale(loc, axis, direction);
-            //トラップドア探し
-            if (util.isTrapDoor(HorizontalBlock, distance)) {
-                if (util.isAvailableHorizontalTrapDoor(HorizontalBlock)) {
-                    Bukkit.getLogger().info("Y:"+loc.getY()+" X:"+loc.getX() + " Z:"+loc.getZ());
-                    isHorizontalTrapDoor = true;
+        for(int yAxis = 0;yAxis<=1;yAxis++) {
+            loc = player.getLocation();
+            loc.setY(loc.getY() + yAxis);
+            for (int distance = 0; distance <= FanUtil.max_distance + 1; distance++) {
+                HorizontalBlock = loc.getBlock();
+                loc = util.getHorizontalLocale(loc, axis, direction);
+                //トラップドア探し
+                if (util.isTrapDoor(HorizontalBlock, distance)) {
+                    if (util.isAvailableHorizontalTrapDoor(HorizontalBlock)) {
+                        isHorizontalTrapDoor = true;
+                    }
+                    break;
                 }
-                break;
-            }
 
                 //空気の場合はいったん無視
-            if (HorizontalBlock.getType().equals(Material.AIR) || HorizontalBlock.getType().equals(Material.CAVE_AIR)
-                    || HorizontalBlock.getType().equals(Material.VOID_AIR)) {
-                continue;
-            } else {
+                if (!(HorizontalBlock.getType().equals(Material.AIR) || HorizontalBlock.getType().equals(Material.CAVE_AIR)
+                        || HorizontalBlock.getType().equals(Material.VOID_AIR))) {
+                    break;
+                }
+            }
+            if(isHorizontalTrapDoor){
                 break;
             }
         }
+
 
         if(!isHorizontalTrapDoor){
             return;
