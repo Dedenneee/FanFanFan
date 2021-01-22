@@ -1,11 +1,10 @@
 package net.kunmc.lab;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.Vector;
+
 import java.util.HashMap;
-import java.util.Map;
 
 public final class FanPlugin extends JavaPlugin {
 
@@ -14,9 +13,14 @@ public final class FanPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         // Plugin startup logic
+
         saveDefaultConfig();
         config = getConfig();
 
+        FanUtil.xAxisVector = new Vector(config.getDouble("velocity.x"),0D,0D);
+        FanUtil.yAxisVector = new Vector(0D,config.getDouble("velocity.y"),0D);
+        FanUtil.zAxisVector = new Vector(0D,0D,config.getDouble("velocity.z"));
+        FanUtil.fall_velocity = config.getDouble("velocity.fall");
         FanUtil.powerMap = new HashMap<String, Integer>(){
             {
                 put("IRON", config.getInt("power.iron"));
@@ -28,7 +32,8 @@ public final class FanPlugin extends JavaPlugin {
                 put("SPRUCE", config.getInt("power.spruce"));
             }
         };
-        FanUtil.MAX_DISTANCE = config.getInt("power.limit");
+        FanUtil.max_distance = config.getInt("power.limit");
+        getLogger().info("扇風機プラグインがオンになりました");
         getServer().getPluginManager().registerEvents(new FanListener(), this);
 
     }
@@ -36,23 +41,7 @@ public final class FanPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        getLogger().info("扇風機プラグインがオフになりました");
     }
 
-    @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args){
-        if (args.length < 1){
-            sender.sendMessage("引数が足りません");
-            return false;
-        }
-        if(cmd.getName().equalsIgnoreCase("fan")){
-            if(args[0].equalsIgnoreCase("on")){
-                FanUtil.enable = true;
-                return true;
-            }else if(args[0].equalsIgnoreCase("off")){
-                FanUtil.enable = false;
-                return true;
-            }
-        }
-        return false;
-    }
 }

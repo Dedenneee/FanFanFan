@@ -1,5 +1,6 @@
 package net.kunmc.lab;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -47,11 +48,11 @@ public class FanListener implements Listener {
      * @param isSneaking スニークしているか
      */
     public void doAction(Player player,boolean isSneaking){
-        if(player.getGameMode() == GameMode.SPECTATOR || player.isFlying() || !FanUtil.enable){
+        if(player.getGameMode() == GameMode.SPECTATOR || player.isFlying() ){
             return;
         }
 
-        checkVerticalAxis(player);
+        checkVerticalAxis(player,isSneaking);
         if(!isSneaking){
             checkHorizontalAxis(player,"X","positive");
             checkHorizontalAxis(player,"X","negative");
@@ -64,12 +65,12 @@ public class FanListener implements Listener {
      * 足元のブロックをチェックして、扇風機なら飛ぶ
      * @param player プレイヤー
      */
-    public void checkVerticalAxis(Player player){
+    public void checkVerticalAxis(Player player,boolean isSneaking){
         Location loc = player.getLocation();
 
         boolean isYTrapDoor = false;
         Block footBlock;
-        for (int distance = 0; distance <= FanUtil.MAX_DISTANCE; distance++){
+        for (int distance = 0; distance <= FanUtil.max_distance; distance++){
             footBlock = loc.getBlock();
             loc.setY(loc.getY() - 1);
             //トラップドア探し
@@ -84,9 +85,7 @@ public class FanListener implements Listener {
             if(footBlock.getType().equals(Material.AIR) || footBlock.getType().equals(Material.CAVE_AIR)
                     || footBlock.getType().equals(Material.VOID_AIR)){
                 continue;
-            }
-            //間に空気以外のブロックがあるときは中断
-            if(!footBlock.getType().equals(Material.IRON_TRAPDOOR)){
+            }else{
                 break;
             }
         }
@@ -105,8 +104,8 @@ public class FanListener implements Listener {
         Vector curVec = player.getVelocity();
         double yVec = 0D;
         //スニークしている場合は降りていく
-        if(player.isSneaking()){
-            yVec = -0.7D;
+        if(isSneaking){
+            yVec = FanUtil.fall_velocity * -1D;
         }
         Vector toVec = new Vector(curVec.getX(),yVec,curVec.getZ());
 
@@ -121,32 +120,32 @@ public class FanListener implements Listener {
      * @param axis 軸 X or Z
      * @param direction 方向 positive or negative
      */
-    public void checkHorizontalAxis(Player player, String axis,String direction){
+    public void checkHorizontalAxis(Player player, String axis,String direction) {
         boolean isHorizontalTrapDoor = false;
+
         Location loc = player.getLocation();
         Block HorizontalBlock = loc.getBlock();
-        for (int distance = 0; distance < FanUtil.MAX_DISTANCE; distance++){
+        for (int distance = 0; distance <= FanUtil.max_distance + 1; distance++) {
             HorizontalBlock = loc.getBlock();
-            loc = util.getHorizontalLocale(loc,axis,direction);
-
+            loc = util.getHorizontalLocale(loc, axis, direction);
             //トラップドア探し
-            if(util.isTrapDoor(HorizontalBlock,distance)){
-                if(util.isAvailableHorizontalTrapDoor(HorizontalBlock)){
+            if (util.isTrapDoor(HorizontalBlock, distance)) {
+                if (util.isAvailableHorizontalTrapDoor(HorizontalBlock)) {
+                    Bukkit.getLogger().info("Y:"+loc.getY()+" X:"+loc.getX() + " Z:"+loc.getZ());
                     isHorizontalTrapDoor = true;
                 }
                 break;
             }
 
-            //空気の場合はいったん無視
-            if(HorizontalBlock.getType().equals(Material.AIR) || HorizontalBlock.getType().equals(Material.CAVE_AIR)
-                    || HorizontalBlock.getType().equals(Material.VOID_AIR) ){
+                //空気の場合はいったん無視
+            if (HorizontalBlock.getType().equals(Material.AIR) || HorizontalBlock.getType().equals(Material.CAVE_AIR)
+                    || HorizontalBlock.getType().equals(Material.VOID_AIR)) {
                 continue;
-            }
-            //間に空気以外のブロックがあるときは中断
-            if(!HorizontalBlock.getType().equals(Material.IRON_TRAPDOOR)){
+            } else {
                 break;
             }
         }
+
         if(!isHorizontalTrapDoor){
             return;
         }

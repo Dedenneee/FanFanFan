@@ -11,11 +11,11 @@ import java.util.Map;
 
 public class FanUtil {
 
-    public static int MAX_DISTANCE;
-    public static  boolean enable = false;
-    final Vector X_AXIS_VECTOR = new Vector(0.2D, 0D,0D);
-    final Vector Y_AXIS_VECTOR = new Vector(0D, 0.35D, 0D);
-    final Vector Z_AXIS_VECTOR = new Vector(0D, 0D,0.2D);
+    public static int max_distance;
+    public static double fall_velocity;
+    public static Vector xAxisVector;
+    public static Vector yAxisVector;
+    public static Vector zAxisVector;
     public static Map<String, Integer> powerMap;
 
     /**
@@ -110,7 +110,7 @@ public class FanUtil {
     }
 
     public  Vector calcVerticalVelocity(Vector curVec){
-        curVec = curVec.add(Y_AXIS_VECTOR);
+        curVec = curVec.add(yAxisVector);
         return curVec;
     }
 
@@ -126,16 +126,16 @@ public class FanUtil {
         switch (axis){
             case "X":
                 if (direction.equals("positive")){
-                    curVec.add(new Vector(X_AXIS_VECTOR.getX() * -1,0D,0D));
+                    curVec.add(new Vector(xAxisVector.getX() * -1,0D,0D));
                 }else if(direction.equals("negative")){
-                    curVec.add(X_AXIS_VECTOR);
+                    curVec.add(xAxisVector);
                 }
                 break;
             case "Z":
                 if (direction.equals("positive")){
-                    curVec.add(new Vector(0D,0D,Z_AXIS_VECTOR.getZ() * -1));
+                    curVec.add(new Vector(0D,0D, zAxisVector.getZ() * -1));
                 }else if(direction.equals("negative")){
-                    curVec.add(Z_AXIS_VECTOR);
+                    curVec.add(zAxisVector);
                 }
                 break;
             default:

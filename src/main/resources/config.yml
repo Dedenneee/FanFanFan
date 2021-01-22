@@ -9,3 +9,8 @@ power:
   birch: 5
   dark_oak: 4
   spruce: 3
+velocity:
+  y: 0.3
+  x: 0.1
+  z: 0.1
+  fall: 0.85
