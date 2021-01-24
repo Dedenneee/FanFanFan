@@ -150,7 +150,6 @@ public class FanUtil {
                 velocity = getHorizontalBlockVelocity(horizontalBlock);
                 if (direction.equals("positive")){
                     curVec.add(new Vector(0D,0D, (velocity * -1)+curVec.getZ() * -2));
-
                 }else if(direction.equals("negative")){
                     curVec.add(new Vector(0D,0D, velocity+curVec.getZ() * -2));
                 }
