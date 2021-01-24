@@ -1,4 +1,5 @@
 扇風機Plugin
 
-/fan <on,off>で切り替え
-config.ymlでトラップドアごとの飛ばす距離調整
+/fanpower <horizontal/vertical/range> <トラップドアの種類> <数値>で切り替え
+
+range トラップドアの有効範囲

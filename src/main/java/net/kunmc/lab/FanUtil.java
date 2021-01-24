@@ -1,5 +1,6 @@
 package net.kunmc.lab;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -136,30 +137,22 @@ public class FanUtil {
      */
     public Vector calcHorizontalVelocity(Vector curVec, String axis, String direction,Block horizontalBlock){
         double velocity = 0D;
-        double prop;
         switch (axis){
             case "X":
-                prop = curVec.getX();
                 velocity = getHorizontalBlockVelocity(horizontalBlock);
-                if(prop < velocity){
-                    prop = prop * 2;
-                }
                 if (direction.equals("positive")){
-                    curVec.add(new Vector(velocity * -1 + prop,0D,0D));
+                    curVec.add(new Vector((velocity * -1)+curVec.getX() * -2,0D,0D));
                 }else if(direction.equals("negative")){
-                    curVec.add(new Vector(velocity + (prop * -1),0D,0D));
+                    curVec.add(new Vector(velocity+ curVec.getX() * -2,0D,0D));
                 }
                 break;
             case "Z":
-                prop = curVec.getZ();
                 velocity = getHorizontalBlockVelocity(horizontalBlock);
-                if(prop < velocity){
-                    prop = prop * 2;
-                }
                 if (direction.equals("positive")){
-                    curVec.add(new Vector(0D,0D, velocity * -1 + prop));
+                    curVec.add(new Vector(0D,0D, (velocity * -1)+curVec.getZ() * -2));
+
                 }else if(direction.equals("negative")){
-                    curVec.add(new Vector(0D,0D, velocity + (prop * -1)));
+                    curVec.add(new Vector(0D,0D, velocity+curVec.getZ() * -2));
                 }
                 break;
             default:
