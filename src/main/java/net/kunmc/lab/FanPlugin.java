@@ -71,7 +71,12 @@ public final class FanPlugin extends JavaPlugin {
                         .filter(e -> e.startsWith(args[1]))
                         .collect(Collectors.toList());
             case 3:
-                return Collections.singletonList("0");
+                if(args[0].equalsIgnoreCase("range")){
+                    return Collections.singletonList("0");
+                }else{
+                    return Collections.singletonList("0.00");
+                }
+
         }
         return Collections.emptyList();
     }
