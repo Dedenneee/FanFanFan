@@ -3,3 +3,13 @@ version: ${project.version}
 main: net.kunmc.lab.FanPlugin
 api-version: 1.15
 authors: [ Dedenneee ]
+commands:
+  fanpower:
+    description: 扇風機の強さを変更するコマンドです。
+    usage: /fanpower <horizontal/vertical/range> <Material of TrapDoor> <value>
+    permission: fanpower.operator
+    permission-message: You don't have <permission>
+permissions:
+  fanpower.operator:
+    description: FanPower operator
+    default: op

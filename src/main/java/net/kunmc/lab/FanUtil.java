@@ -13,10 +13,8 @@ public class FanUtil {
 
     public static int max_distance;
     public static double fall_velocity;
-    public static Vector xAxisVector;
-    public static Vector yAxisVector;
-    public static Vector zAxisVector;
-    public static Map<String, Integer> powerMap;
+    public static Map<String,Velocity> velocityMap;
+    public static Map<String, Integer> rangeMap;
 
     /**
      * 距離によって有効なトラップドアの判定
@@ -27,25 +25,26 @@ public class FanUtil {
     public boolean isTrapDoor(Block block,int distance){
         boolean isTrapDoor = false;
 
-        if(block.getType().equals(Material.IRON_TRAPDOOR)){
+        if(block.getType().equals(Material.IRON_TRAPDOOR)
+                && distance <= rangeMap.get("iron")){
             isTrapDoor = true;
         }else if(block.getType().equals(Material.ACACIA_TRAPDOOR)
-                && distance <= powerMap.get("ACACIA")){
+                && distance <= rangeMap.get("acacia")){
             isTrapDoor = true;
         }else if(block.getType().equals(Material.OAK_TRAPDOOR)
-                && distance <= powerMap.get("OAK")){
+                && distance <= rangeMap.get("oak")){
             isTrapDoor = true;
         }else if(block.getType().equals(Material.JUNGLE_TRAPDOOR)
-                && distance <= powerMap.get("JUNGLE")){
+                && distance <= rangeMap.get("jungle")){
             isTrapDoor = true;
         }else if(block.getType().equals(Material.BIRCH_TRAPDOOR)
-                && distance <= powerMap.get("BIRCH")){
+                && distance <= rangeMap.get("birch")){
             isTrapDoor = true;
         }else if(block.getType().equals(Material.DARK_OAK_TRAPDOOR)
-                && distance <= powerMap.get("DARK_OAK")){
+                && distance <= rangeMap.get("dark_oak")){
             isTrapDoor = true;
         }else if(block.getType().equals(Material.SPRUCE_TRAPDOOR)
-                && distance <= powerMap.get("SPRUCE")){
+                && distance <= rangeMap.get("spruce")){
             isTrapDoor = true;
         }
 
@@ -109,8 +108,22 @@ public class FanUtil {
         return loc;
     }
 
-    public  Vector calcVerticalVelocity(Vector curVec){
-        curVec = curVec.add(yAxisVector);
+    public  Vector calcVerticalVelocity(Vector curVec,Block verticalBlock){
+        if(verticalBlock.getType().equals(Material.IRON_TRAPDOOR)){
+            curVec = curVec.add(new Vector(0D,velocityMap.get("iron").getVerticalVelocity(),0D));
+        }else if(verticalBlock.getType().equals(Material.ACACIA_TRAPDOOR)){
+            curVec = curVec.add(new Vector(0D,velocityMap.get("acacia").getVerticalVelocity(),0D));
+        }else if(verticalBlock.getType().equals(Material.OAK_TRAPDOOR)){
+            curVec = curVec.add(new Vector(0D,velocityMap.get("oak").getVerticalVelocity(),0D));
+        }else if(verticalBlock.getType().equals(Material.JUNGLE_TRAPDOOR)){
+            curVec = curVec.add(new Vector(0D,velocityMap.get("jungle").getVerticalVelocity(),0D));
+        }else if(verticalBlock.getType().equals(Material.BIRCH_TRAPDOOR)){
+            curVec = curVec.add(new Vector(0D,velocityMap.get("birch").getVerticalVelocity(),0D));
+        }else if(verticalBlock.getType().equals(Material.DARK_OAK_TRAPDOOR)){
+            curVec = curVec.add(new Vector(0D,velocityMap.get("dark_oak").getVerticalVelocity(),0D));
+        }else if(verticalBlock.getType().equals(Material.SPRUCE_TRAPDOOR)){
+            curVec = curVec.add(new Vector(0D,velocityMap.get("spruce").getVerticalVelocity(),0D));
+        }
         return curVec;
     }
 
@@ -121,26 +134,55 @@ public class FanUtil {
      * @param direction 方向 positive or negative
      * @return 計算後の速度
      */
-    public Vector calcHorizontalVelocity(Vector curVec, String axis, String direction){
-
+    public Vector calcHorizontalVelocity(Vector curVec, String axis, String direction,Block horizontalBlock){
+        double velocity = 0D;
         switch (axis){
             case "X":
                 if (direction.equals("positive")){
-                    curVec.add(new Vector(xAxisVector.getX() * -1,0D,0D));
+                    velocity = getHorizontalBlockVelocity(horizontalBlock);
+                    curVec.add(new Vector(velocity * -1,0D,0D));
                 }else if(direction.equals("negative")){
-                    curVec.add(xAxisVector);
+                    velocity = getHorizontalBlockVelocity(horizontalBlock);
+                    curVec.add(new Vector(velocity,0D,0D));
                 }
                 break;
             case "Z":
                 if (direction.equals("positive")){
-                    curVec.add(new Vector(0D,0D, zAxisVector.getZ() * -1));
+                    velocity = getHorizontalBlockVelocity(horizontalBlock);
+                    curVec.add(new Vector(0D,0D, velocity * -1));
                 }else if(direction.equals("negative")){
-                    curVec.add(zAxisVector);
+                    velocity = getHorizontalBlockVelocity(horizontalBlock);
+                    curVec.add(new Vector(0D,0D, velocity));
                 }
                 break;
             default:
                 break;
         }
         return curVec;
+    }
+
+    /**
+     * トラップドアの種類ごとの速度を返す
+     * @param horizontalBlock トラップドア
+     * @return 種類ごとの速度
+     */
+    public double getHorizontalBlockVelocity(Block horizontalBlock){
+        double velocity = 0D;
+        if(horizontalBlock.getType().equals(Material.IRON_TRAPDOOR)){
+            velocity = velocityMap.get("iron").getHorizontalVelocity();
+        }else if(horizontalBlock.getType().equals(Material.ACACIA_TRAPDOOR)){
+            velocity = velocityMap.get("acacia").getHorizontalVelocity();
+        }else if(horizontalBlock.getType().equals(Material.OAK_TRAPDOOR)){
+            velocity = velocityMap.get("oak").getHorizontalVelocity();
+        }else if(horizontalBlock.getType().equals(Material.JUNGLE_TRAPDOOR)){
+            velocity = velocityMap.get("jungle").getHorizontalVelocity();
+        }else if(horizontalBlock.getType().equals(Material.BIRCH_TRAPDOOR)){
+            velocity = velocityMap.get("birch").getHorizontalVelocity();
+        }else if(horizontalBlock.getType().equals(Material.DARK_OAK_TRAPDOOR)){
+            velocity = velocityMap.get("dark_oak").getHorizontalVelocity();
+        }else if(horizontalBlock.getType().equals(Material.SPRUCE_TRAPDOOR)) {
+            velocity = velocityMap.get("spruce").getHorizontalVelocity();
+        }
+        return velocity;
     }
 }

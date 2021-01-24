@@ -1,16 +1,40 @@
-#各ブロックの風の有効範囲
+#各ブロックの風の有効範囲と強さ
 #limit = 最大距離
-power:
-  limit: 12
-  iron: 12
-  acacia: 8
-  oak: 7
-  jungle: 6
-  birch: 5
-  dark_oak: 4
-  spruce: 3
-velocity:
-  y: 0.3
-  x: 0.05
-  z: 0.05
-  fall: 0.85
+iron:
+  velocity:
+    horizontal: 0.05
+    vertical: 0.3
+  range: 12
+acacia:
+  velocity:
+    horizontal: 0.05
+    vertical: 0.3
+  range: 8
+oak:
+  velocity:
+    horizontal: 0.05
+    vertical: 0.3
+  range: 7
+jungle:
+  velocity:
+    horizontal: 0.05
+    vertical: 0.3
+  range: 6
+birch:
+  velocity:
+    horizontal: 0.05
+    vertical: 0.3
+  range: 5
+dark_oak:
+  velocity:
+    horizontal: 0.05
+    vertical: 0.3
+  range: 4
+spruce:
+  velocity:
+    horizontal: 0.05
+    vertical: 0.3
+  range: 3
+fall: 0.35
+limit: 12
+limit_block: iron

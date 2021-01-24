@@ -9,12 +9,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.Dispenser;
 import org.bukkit.block.data.type.TrapDoor;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -47,21 +41,21 @@ public class FanAction extends BukkitRunnable {
         Location loc = player.getLocation();
 
         boolean isYTrapDoor = false;
-        Block footBlock;
+        Block verticalBlock = loc.getBlock();
         for (int distance = 0; distance <= FanUtil.max_distance; distance++){
-            footBlock = loc.getBlock();
+            verticalBlock = loc.getBlock();
             loc.setY(loc.getY() - 1);
             //トラップドア探し
-            if(util.isTrapDoor(footBlock,distance)){
-                if(util.isAvailableVerticalTrapDoor(footBlock)){
+            if(util.isTrapDoor(verticalBlock,distance)){
+                if(util.isAvailableVerticalTrapDoor(verticalBlock)){
                     isYTrapDoor = true;
                 }
                 break;
             }
 
             //空気の場合はいったん無視
-            if(!(footBlock.getType().equals(Material.AIR) || footBlock.getType().equals(Material.CAVE_AIR)
-                    || footBlock.getType().equals(Material.VOID_AIR))){
+            if(!(verticalBlock.getType().equals(Material.AIR) || verticalBlock.getType().equals(Material.CAVE_AIR)
+                    || verticalBlock.getType().equals(Material.VOID_AIR))){
                 break;
             }
         }
@@ -79,14 +73,15 @@ public class FanAction extends BukkitRunnable {
         }
         Vector curVec = player.getVelocity();
         double yVec = 0D;
+        Vector toVec = new Vector(curVec.getX(),yVec,curVec.getZ());
         //スニークしている場合は降りていく
         if(isSneaking){
-            yVec = FanUtil.fall_velocity * -1D;
+            yVec = 0.1D;
+            player.setVelocity(new Vector(curVec.getX(),yVec,curVec.getZ()));
+        }else{
+            player.setVelocity(new Vector(curVec.getX(),yVec,curVec.getZ()));
+            player.setVelocity(util.calcVerticalVelocity(player.getVelocity(),verticalBlock));
         }
-        Vector toVec = new Vector(curVec.getX(),yVec,curVec.getZ());
-
-        player.setVelocity(toVec);
-        player.setVelocity(util.calcVerticalVelocity(player.getVelocity()));
         player.setFallDistance(0F);
     }
 
@@ -100,24 +95,24 @@ public class FanAction extends BukkitRunnable {
         boolean isHorizontalTrapDoor = false;
 
         Location loc = player.getLocation();
-        Block HorizontalBlock = loc.getBlock();
+        Block horizontalBlock = loc.getBlock();
         for(int yAxis = 0;yAxis<=1;yAxis++) {
             loc = player.getLocation();
             loc.setY(loc.getY() + yAxis);
             for (int distance = 0; distance <= FanUtil.max_distance + 1; distance++) {
-                HorizontalBlock = loc.getBlock();
+                horizontalBlock = loc.getBlock();
                 loc = util.getHorizontalLocale(loc, axis, direction);
                 //トラップドア探し
-                if (util.isTrapDoor(HorizontalBlock, distance)) {
-                    if (util.isAvailableHorizontalTrapDoor(HorizontalBlock)) {
+                if (util.isTrapDoor(horizontalBlock, distance)) {
+                    if (util.isAvailableHorizontalTrapDoor(horizontalBlock)) {
                         isHorizontalTrapDoor = true;
                     }
                     break;
                 }
 
                 //空気の場合はいったん無視
-                if (!(HorizontalBlock.getType().equals(Material.AIR) || HorizontalBlock.getType().equals(Material.CAVE_AIR)
-                        || HorizontalBlock.getType().equals(Material.VOID_AIR))) {
+                if (!(horizontalBlock.getType().equals(Material.AIR) || horizontalBlock.getType().equals(Material.CAVE_AIR)
+                        || horizontalBlock.getType().equals(Material.VOID_AIR))) {
                     break;
                 }
             }
@@ -136,12 +131,12 @@ public class FanAction extends BukkitRunnable {
             return;
         }
         Dispenser dispenser = (Dispenser)nb.getBlockData();
-        TrapDoor trapDoor = (TrapDoor) HorizontalBlock.getBlockData();
+        TrapDoor trapDoor = (TrapDoor) horizontalBlock.getBlockData();
         if(dispenser.getFacing() != trapDoor.getFacing()){
             return;
         }
         Vector curVec = player.getVelocity();
-        Vector toVec = util.calcHorizontalVelocity(curVec,axis,direction);
+        Vector toVec = util.calcHorizontalVelocity(curVec,axis,direction,horizontalBlock);
         player.setVelocity(toVec);
         player.setFallDistance(0F);
     }
