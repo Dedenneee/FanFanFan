@@ -207,8 +207,8 @@ public final class FanPlugin extends JavaPlugin {
             for(Map.Entry<String,Integer> entry : FanUtil.rangeMap.entrySet()){
                 if(entry.getValue() > max){
                     max = entry.getValue();
-                    config.set("limit",range);
-                    config.set("limit_block",material);
+                    config.set("limit",max);
+                    config.set("limit_block",entry.getKey());
                 }
             }
         }

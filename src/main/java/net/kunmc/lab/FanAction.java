@@ -62,6 +62,7 @@ public class FanAction extends BukkitRunnable {
         if(!isYTrapDoor){
             return;
         }
+
         //トラップドアの下のブロック
         Block ub = loc.getBlock();
         if(!ub.getType().equals(Material.DISPENSER) ){
@@ -73,10 +74,10 @@ public class FanAction extends BukkitRunnable {
         }
         Vector curVec = player.getVelocity();
         double yVec = 0D;
-        Vector toVec = new Vector(curVec.getX(),yVec,curVec.getZ());
+
         //スニークしている場合は降りていく
         if(isSneaking){
-            yVec = 0.1D;
+            yVec = -0.6D;
             player.setVelocity(new Vector(curVec.getX(),yVec,curVec.getZ()));
         }else{
             player.setVelocity(new Vector(curVec.getX(),yVec,curVec.getZ()));
