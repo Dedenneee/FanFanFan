@@ -1,21 +1,38 @@
-package net.kunmc.lab;
+package net.kunmc.lab.util;
 
-import org.bukkit.Bukkit;
+import net.kunmc.lab.bean.Velocity;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Bisected;
 import org.bukkit.block.data.type.TrapDoor;
+import org.bukkit.entity.*;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 public class FanUtil {
 
     public static int max_distance;
     public static double fall_velocity;
-    public static Map<String,Velocity> velocityMap;
+    public static Map<String, Velocity> velocityMap;
     public static Map<String, Integer> rangeMap;
+
+    /**
+     * 飛ばすエンティティか判定する
+     * @param entity エンティティ
+     * @return 飛ばすか否か
+     */
+    public boolean checkMovingEntity(Entity entity){
+        boolean isMoving = false;
+        if(entity instanceof Animals || entity instanceof Item
+                || entity instanceof Monster || entity instanceof Mob
+                || entity instanceof TNTPrimed || entity instanceof Vehicle){
+            isMoving = true;
+        }
+        return isMoving;
+    }
 
     /**
      * 距離によって有効なトラップドアの判定

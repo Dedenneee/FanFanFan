@@ -1,4 +1,4 @@
-package net.kunmc.lab;
+package net.kunmc.lab.bean;
 
 public class Velocity {
     private double horizontalVelocity;

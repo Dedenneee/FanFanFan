@@ -1,44 +1,24 @@
 package net.kunmc.lab;
 
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import net.kunmc.lab.util.FanUtil;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.Dispenser;
 import org.bukkit.block.data.type.TrapDoor;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-public class FanAction extends BukkitRunnable {
+public class EntityAction {
     FanUtil util = new FanUtil();
-
-    @Override
-    public void run(){
-        Bukkit.getServer().getOnlinePlayers().forEach(player ->{
-            if(player.getGameMode() == GameMode.SPECTATOR || player.isFlying() ){
-                return;
-            }
-            boolean isSneaking = player.isSneaking();
-            checkVerticalAxis(player,isSneaking);
-            if(!isSneaking){
-                checkHorizontalAxis(player,"X","positive");
-                checkHorizontalAxis(player,"X","negative");
-                checkHorizontalAxis(player,"Z","positive");
-                checkHorizontalAxis(player,"Z","negative");
-            }
-        });
-
-    }
 
     /**
      * 足元のブロックをチェックして、扇風機なら飛ぶ
-     * @param player プレイヤー
+     * @param entity エンティティ
      */
-    public void checkVerticalAxis(Player player,boolean isSneaking){
-        Location loc = player.getLocation();
+    public void checkVerticalAxis(Entity entity){
+        Location loc = entity.getLocation();
 
         boolean isYTrapDoor = false;
         Block verticalBlock = loc.getBlock();
@@ -72,33 +52,36 @@ public class FanAction extends BukkitRunnable {
         if(dispenser.getFacing() != BlockFace.UP){
             return;
         }
-        Vector curVec = player.getVelocity();
+        Vector curVec = entity.getVelocity();
         double yVec = 0D;
-
         //スニークしている場合は降りていく
+        boolean isSneaking = false;
+        if (entity instanceof Player){
+            isSneaking = ((Player) entity).isSneaking();
+        }
         if(isSneaking){
             yVec = -0.6D;
-            player.setVelocity(new Vector(curVec.getX(),yVec,curVec.getZ()));
+            entity.setVelocity(new Vector(curVec.getX(),yVec,curVec.getZ()));
         }else{
-            player.setVelocity(new Vector(curVec.getX(),yVec,curVec.getZ()));
-            player.setVelocity(util.calcVerticalVelocity(player.getVelocity(),verticalBlock));
+            entity.setVelocity(new Vector(curVec.getX(),yVec,curVec.getZ()));
+            entity.setVelocity(util.calcVerticalVelocity(entity.getVelocity(),verticalBlock));
         }
-        player.setFallDistance(0F);
+        entity.setFallDistance(0F);
     }
 
     /**
      * 水平方向のブロックをチェックして、扇風機なら飛ぶ
-     * @param player プレイヤー
+     * @param entity プレイヤー
      * @param axis 軸 X or Z
      * @param direction 方向 positive or negative
      */
-    public void checkHorizontalAxis(Player player, String axis,String direction) {
+    public void checkHorizontalAxis(Entity entity, String axis,String direction) {
         boolean isHorizontalTrapDoor = false;
 
-        Location loc = player.getLocation();
+        Location loc = entity.getLocation();
         Block horizontalBlock = loc.getBlock();
         for(int yAxis = 0;yAxis<=1;yAxis++) {
-            loc = player.getLocation();
+            loc = entity.getLocation();
             loc.setY(loc.getY() + yAxis);
             for (int distance = 0; distance <= FanUtil.max_distance + 1; distance++) {
                 horizontalBlock = loc.getBlock();
@@ -121,8 +104,6 @@ public class FanAction extends BukkitRunnable {
                 break;
             }
         }
-
-
         if(!isHorizontalTrapDoor){
             return;
         }
@@ -136,9 +117,7 @@ public class FanAction extends BukkitRunnable {
         if(dispenser.getFacing() != trapDoor.getFacing()){
             return;
         }
-        Vector curVec = player.getVelocity();
-        Vector toVec = util.calcHorizontalVelocity(curVec,axis,direction,horizontalBlock);
-        player.setVelocity(toVec);
-        player.setFallDistance(0F);
+        Vector curVec = entity.getVelocity();
+        entity.setVelocity(util.calcHorizontalVelocity(curVec,axis,direction,horizontalBlock));
     }
 }

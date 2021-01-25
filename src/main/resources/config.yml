@@ -35,6 +35,5 @@ spruce:
     horizontal: 0.05
     vertical: 0.3
   range: 3
-fall: 0.35
 limit: 12
 limit_block: iron

@@ -1,5 +1,23 @@
 扇風機Plugin
+Paper 1.15.2
 
 /fanpower <horizontal/vertical/range> <トラップドアの種類> <数値>で切り替え
 
-range トラップドアの有効範囲
+horizontal - 水平方向の強さ
+vertical - 垂直方向の強さ
+range - 風の有効範囲
+
+トラップドアの種類
+all - すべて
+iron
+acacia
+oak
+jungle
+birch
+dark_oak
+spruce
+
+数値フォーマット
+horizontal - 0.00
+vertical - 0.00
+range - 0(整数)

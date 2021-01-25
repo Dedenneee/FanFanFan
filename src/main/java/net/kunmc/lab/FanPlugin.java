@@ -1,5 +1,7 @@
 package net.kunmc.lab;
 
+import net.kunmc.lab.bean.Velocity;
+import net.kunmc.lab.util.FanUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -19,7 +21,7 @@ public final class FanPlugin extends JavaPlugin {
         config = getConfig();
 
         FanUtil.fall_velocity = config.getDouble("fall");
-        FanUtil.velocityMap = new HashMap<String,Velocity>(){
+        FanUtil.velocityMap = new HashMap<String, Velocity>(){
             {
                 put("iron", new Velocity(config.getDouble("iron.velocity.horizontal"),
                         config.getDouble("iron.velocity.vertical")));
@@ -50,7 +52,7 @@ public final class FanPlugin extends JavaPlugin {
         };
         FanUtil.max_distance = config.getInt("limit");
         getLogger().info("扇風機プラグインがオンになりました");
-        new FanAction().runTaskTimer(this,0L,1L);
+        new FanTask().runTaskTimer(this,0L,1L);
     }
 
     @Override
@@ -102,7 +104,7 @@ public final class FanPlugin extends JavaPlugin {
         }
 
         String arg2 = args[1];
-        List<String> materials = new ArrayList<>();
+        ArrayList<String> materials = new ArrayList<>();
         materials.add("all");
         materials.add("iron");
         materials.add("acacia");
