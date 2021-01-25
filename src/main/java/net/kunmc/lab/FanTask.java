@@ -26,14 +26,15 @@ public class FanTask extends BukkitRunnable {
         HashMap<Long, Chunk> uniqueChunkMap = new HashMap<Long, Chunk>();
 
         Bukkit.getServer().getOnlinePlayers().forEach(player ->{
-            if(player.getGameMode() == GameMode.SPECTATOR || player.isFlying() ){
-                return;
-            }
             Chunk chunk[] = player.getWorld().getLoadedChunks();
             for (int i = 0;i < chunk.length;i++){
                 if(!uniqueChunkMap.containsKey(chunk[i].getChunkKey())){
                     uniqueChunkMap.put(chunk[i].getChunkKey(), chunk[i]);
                 }
+            }
+
+            if(player.getGameMode() == GameMode.SPECTATOR || player.isFlying() ){
+                return;
             }
 
             boolean isSneaking = player.isSneaking();
