@@ -32,10 +32,7 @@ public class EntityAction {
                 }
                 break;
             }
-
-            //空気の場合はいったん無視
-            if(!(verticalBlock.getType().equals(Material.AIR) || verticalBlock.getType().equals(Material.CAVE_AIR)
-                    || verticalBlock.getType().equals(Material.VOID_AIR))){
+            if(!util.checkEmptyBlock(verticalBlock)){
                 break;
             }
         }
@@ -93,10 +90,7 @@ public class EntityAction {
                     }
                     break;
                 }
-
-                //空気の場合はいったん無視
-                if (!(horizontalBlock.getType().equals(Material.AIR) || horizontalBlock.getType().equals(Material.CAVE_AIR)
-                        || horizontalBlock.getType().equals(Material.VOID_AIR))) {
+                if (!util.checkEmptyBlock(horizontalBlock)) {
                     break;
                 }
             }

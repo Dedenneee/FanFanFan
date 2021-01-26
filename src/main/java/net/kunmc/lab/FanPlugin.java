@@ -2,6 +2,7 @@ package net.kunmc.lab;
 
 import net.kunmc.lab.bean.Velocity;
 import net.kunmc.lab.util.FanUtil;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;

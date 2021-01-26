@@ -2,16 +2,8 @@ package net.kunmc.lab;
 
 import net.kunmc.lab.util.FanUtil;
 import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.data.type.Dispenser;
-import org.bukkit.block.data.type.TrapDoor;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;

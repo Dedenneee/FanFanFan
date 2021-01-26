@@ -1,6 +1,7 @@
 package net.kunmc.lab.util;
 
 import net.kunmc.lab.bean.Velocity;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -18,6 +19,20 @@ public class FanUtil {
     public static double fall_velocity;
     public static Map<String, Velocity> velocityMap;
     public static Map<String, Integer> rangeMap;
+    public static ArrayList<Material> emptyMaterials;
+
+    /**
+     * 風判定を通すブロックのチェック
+     * @param block ブロック
+     * @return  風を通すかどうか
+     */
+    public boolean checkEmptyBlock(Block block){
+        boolean isEmpty = false;
+        if(!block.getType().isSolid()){
+            isEmpty = true;
+        }
+        return isEmpty;
+    }
 
     /**
      * 飛ばすエンティティか判定する
