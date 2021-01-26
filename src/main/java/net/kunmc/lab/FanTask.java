@@ -14,14 +14,12 @@ public class FanTask extends BukkitRunnable {
     EntityAction entityAction = new EntityAction();
     @Override
     public void run(){
-        ArrayList<Chunk> chunkList = new ArrayList<>();
-        HashMap<Long, Chunk> uniqueChunkMap = new HashMap<Long, Chunk>();
-
+        HashMap<Long, Chunk> uniqueChunkMap = new HashMap<>();
         Bukkit.getServer().getOnlinePlayers().forEach(player ->{
             Chunk chunk[] = player.getWorld().getLoadedChunks();
-            for (int i = 0;i < chunk.length;i++){
-                if(!uniqueChunkMap.containsKey(chunk[i].getChunkKey())){
-                    uniqueChunkMap.put(chunk[i].getChunkKey(), chunk[i]);
+            for (Chunk value : chunk) {
+                if (!uniqueChunkMap.containsKey(value.getChunkKey())) {
+                    uniqueChunkMap.put(value.getChunkKey(), value);
                 }
             }
 

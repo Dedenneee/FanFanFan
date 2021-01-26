@@ -1,7 +1,6 @@
 package net.kunmc.lab.util;
 
 import net.kunmc.lab.bean.Velocity;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -10,7 +9,6 @@ import org.bukkit.block.data.type.TrapDoor;
 import org.bukkit.entity.*;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 public class FanUtil {
@@ -19,7 +17,6 @@ public class FanUtil {
     public static double fall_velocity;
     public static Map<String, Velocity> velocityMap;
     public static Map<String, Integer> rangeMap;
-    public static ArrayList<Material> emptyMaterials;
 
     /**
      * 風判定を通すブロックのチェック
